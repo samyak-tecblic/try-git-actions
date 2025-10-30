@@ -1,5 +1,5 @@
 # .github/workflows/auto-merge.yml
-name: Auto Merge (develop → staging → master)
+name: (develop → staging → master)
 
 # TRIGGERS - update here if you want a different trigger
 on:
