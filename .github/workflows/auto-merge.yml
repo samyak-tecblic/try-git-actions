@@ -1,0 +1,77 @@
+# .github/workflows/auto-merge.yml
+name: Auto Merge (develop → staging → master)
+
+# TRIGGERS - update here if you want a different trigger
+on:
+  push:
+    branches:
+      - develop   # <<--- UPDATE if your source branch is named something else (e.g., 'dev')
+  workflow_dispatch:  # allows manual run from Actions tab
+
+# Concurrency prevents overlapping runs
+concurrency:
+  group: auto-merge-${{ github.ref }}
+  cancel-in-progress: true
+
+# Give the workflow the minimum permissions required to push
+permissions:
+  contents: write   # required to push commits (change only if using PAT as below)
+
+jobs:
+  merge-to-staging:
+    name: Merge develop → staging
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout develop
+        uses: actions/checkout@v4
+        with:
+          ref: develop      # <<--- UPDATE if your develop branch has a different name
+          fetch-depth: 0
+
+      - name: Configure Git
+        run: |
+          git config --global user.name "github-actions[bot]"   # <<--- UPDATE to a different bot name if you want
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"  # <<--- UPDATE email if desired
+
+      - name: Fetch all
+        run: git fetch --all
+
+      - name: Merge develop → staging
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # <<--- change to PAT secret name if you create one (see note)
+        run: |
+          # --------- UPDATE BRANCH NAME BELOW IF NEEDED --------------
+          git checkout staging
+          git merge origin/develop --no-edit   # --no-edit auto-uses the merge message
+          git push origin staging
+          # ------------------------------------------------------------
+  merge-to-master:
+    name: Merge staging → master
+    runs-on: ubuntu-latest
+    needs: merge-to-staging
+
+    steps:
+      - name: Checkout staging
+        uses: actions/checkout@v4
+        with:
+          ref: staging    # <<--- UPDATE if your staging branch has a different name
+          fetch-depth: 0
+
+      - name: Configure Git
+        run: |
+          git config --global user.name "github-actions[bot]"   # same as above
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Fetch all
+        run: git fetch --all
+
+      - name: Merge staging → master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # <<--- change to PAT secret name if you create one (see note)
+        run: |
+          # --------- UPDATE BRANCH NAME BELOW IF NEEDED --------------
+          git checkout master
+          git merge origin/staging --no-edit
+          git push origin master
+          # ------------------------------------------------------------
