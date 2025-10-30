@@ -3,9 +3,9 @@ name: Auto Merge (develop → staging → master)
 
 # TRIGGERS - update here if you want a different trigger
 on:
-  push:
-    branches:
-      - develop   # <<--- UPDATE if your source branch is named something else (e.g., 'dev')
+  # push:
+  #   branches:
+  #     - develop   # <<--- UPDATE if your source branch is named something else (e.g., 'dev')
   workflow_dispatch:  # allows manual run from Actions tab
 
 # Concurrency prevents overlapping runs
