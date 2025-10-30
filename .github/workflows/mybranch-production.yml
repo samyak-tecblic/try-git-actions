@@ -35,7 +35,9 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           git checkout develop
-          git merge origin/${{ github.ref }} --no-edit
+          BRANCH_NAME="${GITHUB_REF#refs/heads/}"   # extract branch name only
+          echo "Merging branch: $BRANCH_NAME"
+          git merge origin/$BRANCH_NAME --no-edit
           git push origin develop
 
   merge-to-staging:
