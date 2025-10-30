@@ -10,3 +10,5 @@ print("Hi How are you?")
     "name":"Sam"
 }
 ```
+
+Let's Try Sam -> Production using the Action `Current Branch to Production`
