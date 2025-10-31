@@ -1,4 +1,4 @@
-### This repo is just for testing purose related to git actions
+### This repo is just for testing purpose related to git actions
 
 - Created staging and develop branch
 ```python
